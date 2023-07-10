@@ -1,0 +1,10 @@
+{
+  "Name": "dummy",
+  "Author": "roeyskoe",
+  "Version": "1.0.0",
+  "Description": "Used to launch the game in Visual Studio with all of the mods in debuggable.",
+  "UniqueID": "roeyskoe.dummyMod",
+  "EntryDll": "dummy.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}

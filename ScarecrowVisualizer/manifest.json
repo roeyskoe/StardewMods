@@ -1,0 +1,10 @@
+{
+  "Name": "Scarecrow visualizer",
+  "Author": "roeyskoe",
+  "Version": "1.0.0",
+  "Description": "Shows scarecrows working range",
+  "UniqueID": "roeyskoe.ScarecrowVisualizer",
+  "EntryDll": "ScarecrowVisualizer.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}
