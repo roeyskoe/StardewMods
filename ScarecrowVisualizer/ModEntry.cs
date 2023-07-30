@@ -4,7 +4,7 @@ using StardewValley;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using System.Diagnostics;
-using System;
+using System.Collections.Generic;
 
 namespace FasterToolUse
 {
@@ -16,9 +16,37 @@ namespace FasterToolUse
         public override void Entry(IModHelper helper)
         {
             helper.Events.Display.RenderedWorld += RenderedWorld;
+            helper.Events.World.ObjectListChanged += (a, b) => UpdateLocations();
+            helper.Events.Player.Warped += (a, b) => UpdateLocations();
         }
 
         float hovertime = 0;
+        HashSet<Vector2> locations = new HashSet<Vector2>();
+
+        private void UpdateLocations()
+        {
+            locations.Clear();
+
+            foreach (var obj in Game1.player.currentLocation?.Objects.Values)
+            {
+                if (obj.IsScarecrow())
+                {
+                    var radius = obj.GetRadiusForScarecrow();
+                    var v = obj.TileLocation;
+                    for (var i = -radius; i < radius; i++)
+                    {
+                        for (int j = -radius; j < radius; j++)
+                        {
+                            var tilePos = new Vector2(v.X + i, v.Y + j);
+                            if (Vector2.Distance(tilePos, v) < radius)
+                            {
+                                locations.Add(new Vector2(tilePos.X * 64, tilePos.Y * 64));
+                            }
+                        }
+                    }
+                }
+            }
+        }
 
         private void RenderedWorld(object sender, RenderedWorldEventArgs e)
         {
@@ -62,25 +90,9 @@ namespace FasterToolUse
 
         private void RenderRanges(SpriteBatch batch)
         {
-            foreach (var obj in Game1.player.currentLocation?.Objects.Values)
+            foreach (var location in locations)
             {
-                if (obj.IsScarecrow())
-                {
-                    var radius = obj.GetRadiusForScarecrow();
-                    var v = obj.TileLocation;
-                    for (var i = -radius; i < radius; i++)
-                    {
-                        for (int j = -radius; j < radius; j++)
-                        {
-                            var tilePos = new Vector2(v.X + i, v.Y + j);
-                            if (Vector2.Distance(tilePos, v) < radius)
-                            {
-                                var drawPos = Game1.GlobalToLocal(new Vector2(tilePos.X * 64, tilePos.Y * 64));
-                                batch.Draw(Game1.mouseCursors, drawPos, new Rectangle(194, 388, 16, 16), Color.White * Ease(hovertime), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
-                            }
-                        }
-                    }
-                }
+                batch.Draw(Game1.mouseCursors, Game1.GlobalToLocal(location), new Rectangle(194, 388, 16, 16), Color.White * Ease(hovertime), 0f, Vector2.Zero, 4f, SpriteEffects.None, 0.01f);
             }
         }
     }
