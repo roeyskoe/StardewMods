@@ -76,9 +76,6 @@ namespace FasterToolUse
             var pos = cursorPos.Tile;
             var obj = Game1.player.currentLocation?.getObjectAtTile((int)pos.X, (int)pos.Y);
 
-            if (this.Helper.Input.IsDown(SButton.LeftShift))
-                Debugger.Break();
-
             return obj?.IsScarecrow() ?? false;
         }
 

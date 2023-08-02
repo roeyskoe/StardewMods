@@ -1,0 +1,10 @@
+{
+  "Name": "Aging reminder",
+  "Author": "roeyskoe",
+  "Version": "1.0.0",
+  "Description": "Shows reminder on cask & keg progress",
+  "UniqueID": "roeyskoe.AgingReminder",
+  "EntryDll": "AgingReminder.dll",
+  "MinimumApiVersion": "3.0.0",
+  "UpdateKeys": []
+}
