@@ -27,6 +27,7 @@ namespace FasterToolUse
                 {
                     var locations = GetStatuses();
                     Helper.Multiplayer.SendMessage(locations, "CaskNotification", modIDs: new[] { this.ModManifest.UniqueID });
+                    Remind(locations);
                 }
             }
             else
