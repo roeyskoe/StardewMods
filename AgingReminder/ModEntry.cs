@@ -3,8 +3,6 @@ using StardewModdingAPI;
 using StardewValley;
 using StardewValley.Objects;
 using System.Collections.Generic;
-using System;
-using System.Linq;
 
 namespace FasterToolUse
 {
@@ -51,6 +49,7 @@ namespace FasterToolUse
             public string LocationName;
             public string ObjectName;
             public ObjectLevel ObjectLevel;
+            public bool IsKeg;
         }
 
         public enum ObjectLevel
@@ -61,13 +60,15 @@ namespace FasterToolUse
             Iridium = 4,
         }
 
-        private List<Location> GetStatuses()
+        private static List<Location> GetStatuses()
         {
-            List<Location> locations = new List<Location>();
+            var locations = new List<Location>();
             foreach (GameLocation location in Game1.locations)
             {
-                var loc = new Location();
-                loc.LocationName = location.Name;
+                var loc = new Location
+                {
+                    LocationName = location.Name
+                };
 
                 foreach (var obj in location.Objects.Values)
                 {
@@ -82,13 +83,15 @@ namespace FasterToolUse
                             {
                                 loc.ObjectLevel = ObjectLevel.Iridium;
                                 loc.ObjectName = heldObject.Name;
+                                loc.IsKeg = false;
                                 break;
                             }
                             // If the quality increased today.
                             if (c.GetDaysForQuality(c.GetNextQuality(heldObject.Quality - 1)) == val)
                             {
                                 // Only care about the highest quality one.
-                                if(val > (int)loc.ObjectLevel)
+                                // If we already have a Keg ready in the location, disregard casks that are not ready.
+                                if(val > (int)loc.ObjectLevel && !loc.IsKeg)
                                 {
                                     loc.ObjectName = heldObject.Name;
                                     loc.ObjectLevel = val switch
@@ -102,9 +105,17 @@ namespace FasterToolUse
                             }
                         }
                     }
+                    else if(obj.Name.Equals("Keg"))
+                    {
+                        if(obj.heldObject.Value != null && obj.MinutesUntilReady == 0)
+                        {
+                            loc.ObjectName = obj.heldObject.Value.Name;
+                            loc.IsKeg = true;
+                        }
+                    }
                 }
                 // Dont care if nothing to report of.
-                if(loc.ObjectLevel != 0)
+                if(loc.ObjectLevel != 0 || loc.IsKeg)
                 {
                     locations.Add(loc);
                 }
@@ -113,18 +124,26 @@ namespace FasterToolUse
             return locations;
         }
 
-        private void Remind(List<Location> locations)
+        private static void Remind(List<Location> locations)
         {
             foreach (Location location in locations)
             {
+                HUDMessage msg;
+
                 if (location.ObjectLevel == ObjectLevel.Iridium)
                 {
-                    Game1.addHUDMessage(new HUDMessage($"{location.LocationName}: {location.ObjectName} ready!", 1));
+                    msg = new HUDMessage($"{location.LocationName}: {location.ObjectName} is ready!", 1);
+                }
+                else if (location.IsKeg)
+                {
+                    msg = new HUDMessage($"{location.LocationName}: Keg of {location.ObjectName} is ready!", 2);
                 }
                 else
                 {
-                    Game1.addHUDMessage(new HUDMessage($"{location.LocationName}: {location.ObjectName} at {location.ObjectLevel}", 2));
+                    msg = new HUDMessage($"{location.LocationName}: {location.ObjectName} at {location.ObjectLevel}", 2);
                 }
+                msg.fadeIn = false;
+                Game1.addHUDMessage(msg);
             }
         }
     }
