@@ -142,7 +142,7 @@ namespace FasterToolUse
                 {
                     msg = new HUDMessage($"{location.LocationName}: {location.ObjectName} at {location.ObjectLevel}", 2);
                 }
-                msg.fadeIn = false;
+
                 Game1.addHUDMessage(msg);
             }
         }

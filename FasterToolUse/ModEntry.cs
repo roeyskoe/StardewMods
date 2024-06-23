@@ -20,20 +20,18 @@ namespace FasterToolUse
 
             if (Game1.player != null)
             {
-                int toolHold = Game1.player.toolHold;
+                int toolHold = Game1.player.toolHold.Value;
 
                 if (!Game1.player.canReleaseTool || toolHold <= 0)
                     return;
 
-                //Game1.player.toolPower = Game1.player.CurrentTool.UpgradeLevel;
-
                 if (toolHold - modifier <= 0)
                 {
-                    Game1.player.toolHold = 1;
+                    Game1.player.toolHold.Value = 1;
                 }
                 else
                 {
-                    Game1.player.toolHold -= modifier;
+                    Game1.player.toolHold.Value -= modifier;
                 }
             }
         }
